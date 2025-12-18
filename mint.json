@@ -1,0 +1,109 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "prism",
+  "name": "Alto Health",
+  "colors": {
+    "primary": "#130185",
+    "light": "#130185",
+    "dark": "#130185"
+  },
+  "favicon": "/favicon.svg",
+  "tabs": [
+    {
+      "name": "Documentation",
+      "url": "docs"
+    },
+    {
+      "name": "User Guides",
+      "url": "user-guides"
+    },
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "index",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/supported-formats"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/webhooks",
+        "guides/authentication",
+        "guides/error-handling",
+        "guides/decision-trees"
+      ]
+    },
+    {
+      "group": "Overview",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    },
+    {
+      "group": "File Endpoints",
+      "pages": [
+        "api-reference/endpoint/document-upload",
+        "api-reference/endpoint/get-job"
+      ]
+    },
+    {
+      "group": "Automation",
+      "pages": [
+        "api-reference/endpoint/run-automation"
+      ]
+    },
+    {
+      "group": "Automation Use Cases",
+      "pages": [
+        "api-reference/use-cases/data-extraction",
+        "api-reference/use-cases/rag"
+      ]
+    },
+    {
+      "group": "System",
+      "pages": [
+        "api-reference/endpoint/health-check"
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "name": "API Status",
+      "url": "https://app.arahealth.io/api/v1/pub/health",
+      "icon": "heart-pulse"
+    }
+  ],
+  "logo": {
+    "light": "/logo/Alto_logo.png",
+    "dark": "/logo/Alto_logo.png"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/altohealthcare"
+    }
+  }
+}
