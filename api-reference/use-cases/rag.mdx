@@ -1,0 +1,226 @@
+---
+title: 'RAG (Retrieval Augmented Generation)'
+description: 'Use Alto Health for context-aware AI applications with medical referrals'
+---
+
+## Overview
+
+Alto Health's RAG capabilities enable you to build context-aware AI applications that can answer questions and generate insights from medical referral referrals. By combining referral retrieval with AI generation, you can create intelligent systems that understand and reason over clinical information.
+
+## How It Works
+
+Alto Health processes your medical referrals and makes the content queryable through natural language:
+
+1. **Upload referrals** - Send medical referrals using the Upload referral endpoint
+2. **Automatic Indexing** - Alto Health automatically processes and indexes referral content
+3. **Query with Decision Tree** - Ask questions or generate insights using the indexed clinical data
+4. **Structured Responses** - Receive accurate, context-aware answers grounded in the actual referral content
+
+## Example Response
+
+When pathway evaluation completes, Alto Health sends a webhook notification with RAG-powered clinical reasoning. Here's an example showing how Alto Health evaluates clinical pathways using retrieved referral context:
+
+```json
+{
+  "results": [
+    {
+      "result": false,
+      "reason": "## Detailed Clinical Explanation\n\nBased on the medical referral provided, there is **no mention of any Achilles tendon pathology** in this patient. The referral letter is specifically focused on breast pathology, not musculoskeletal or tendon issues.\n\n### Evidence from the referral\n\nThe patient's presenting complaint is \"redness and swelling in right breast since 4 months\" with gradual swelling, increasing redness, and pain in her right breast.\n\n### Clinical Context\n\nThe clinical presentation described in this referral is highly suggestive of inflammatory breast pathology (possibly inflammatory breast cancer given the peau d'orange appearance, nipple inversion, and axillary lymphadenopathy).\n\n**Conclusion:** This patient does not have an Achilles tendon rupture (acute or delayed) and therefore does not require urgent fracture clinic assessment for this condition.",
+      "comparison_type": "equal",
+      "value_a": "Does the patient have an acute or delayed Achilles tendon rupture that requires urgent assessment (if a fracture clinic is available)?",
+      "value_b": "Yes",
+      "citation": "Rosa presented with redness and swelling in right breast since 4 months. She has noticed that her right breast is gradually becoming swollen and redness is increasing since 4 months.",
+      "confidence": 100,
+      "model_results": [
+        {
+          "model_name": "Ara-Clinical-4",
+          "result": false,
+          "reason": "Based on the medical referral provided, there is no mention of any Achilles tendon pathology in this patient..."
+        },
+        {
+          "model_name": "Ara-Clinical-5",
+          "result": false,
+          "reason": "The referral concerns breast symptoms and examination findings. There is no mention of lower limb injury, ankle/calf pain, or any Achilles tendon findings..."
+        },
+        {
+          "model_name": "Ara-Clinical-5.1",
+          "result": false,
+          "reason": "The referral exclusively describes breast-related symptoms and findings. There is no mention of the ankle, heel, calf, Achilles tendon, or any musculoskeletal complaint..."
+        }
+      ],
+      "operator": "OR",
+      "condition": "isEqualTo"
+    },
+    {
+      "result": false,
+      "reason": "## Detailed Clinical Explanation\n\nThe medical referral provided does not contain any information about an Achilles tendon rupture or any lower extremity pathology.\n\nThe patient, Rosa Brown, presented with redness and swelling in her right breast for 4 months, with gradually increasing swelling and redness, as well as pain in her right breast.\n\nThis clinical presentation is consistent with a breast pathology requiring evaluation by a breast surgeon, not an Achilles tendon injury.\n\n**Conclusion:** Based on the information provided in this referral, the patient does not have a chronic Achilles tendon rupture.",
+      "comparison_type": "equal",
+      "value_a": "Does the patient have a chronic Achilles tendon rupture lasting longer than three months?",
+      "value_b": "Yes",
+      "citation": "Rosa presented with redness and swelling in right breast since 4 months. The right breast is swollen and there is marked erythema around the nipple.",
+      "confidence": 100,
+      "model_results": [
+        {
+          "model_name": "Ara-Clinical-4",
+          "result": false,
+          "reason": "The medical referral does not contain any information about an Achilles tendon rupture or any lower extremity pathology..."
+        },
+        {
+          "model_name": "Ara-Clinical-5",
+          "result": false,
+          "reason": "The referral focuses exclusively on right breast symptoms. The 4-month duration pertains to breast changes, not to an Achilles condition..."
+        },
+        {
+          "model_name": "Ara-Clinical-5.1",
+          "result": false,
+          "reason": "The referral exclusively describes breast-related symptoms. There is no evidence that the patient has a chronic Achilles tendon rupture..."
+        }
+      ],
+      "operator": "OR",
+      "condition": "isEqualTo",
+      "ruleIndex": 1
+    },
+    {
+      "result": false,
+      "reason": "## Detailed Clinical Explanation\n\nThe medical referral provided does not contain any information about Achilles tendon-related pain or functional impairment in this patient.\n\nThe examination findings describe asymmetrical breasts, with the right breast showing swelling, marked erythema around the nipple and upper outer quadrant, peau d'orange appearance, nipple inversion, and palpable non-mobile axillary lymph nodes.\n\nThere is no mention of:\n- Achilles tendon symptoms\n- Lower extremity pain\n- Any trial of non-operative management for tendon-related conditions\n\n**Conclusion:** The answer to whether the patient has Achilles tendon-related pain or functional impairment that continues despite adequate non-operative management is definitively False.",
+      "comparison_type": "equal",
+      "value_a": "Does the patient have Achilles tendon–related pain or functional impairment that continues despite an adequate trial of non-operative management?",
+      "value_b": "Yes",
+      "citation": "Rosa presented with redness and swelling in right breast since 4 months. On examination she has asymmetrical breasts. The right breast is swollen and there is marked erythema around the nipple.",
+      "confidence": 100,
+      "model_results": [
+        {
+          "model_name": "Ara-Clinical-4",
+          "result": false,
+          "reason": "The medical referral does not contain any information about Achilles tendon-related pain or functional impairment..."
+        },
+        {
+          "model_name": "Ara-Clinical-5",
+          "result": false,
+          "reason": "The referral focuses solely on right breast symptoms and does not mention any Achilles tendon pathology or non-operative management trial..."
+        },
+        {
+          "model_name": "Ara-Clinical-5.1",
+          "result": false,
+          "reason": "The referral only describes breast-related symptoms. There is no mention of Achilles tendon pain or Achilles-related functional impairment..."
+        }
+      ],
+      "condition": "isEqualTo",
+      "ruleIndex": 2
+    }
+  ],
+  "job_id": "b562615c-c1e7-46d3-ab17-7dc9e8c56e55",
+  "processed_at": "2025-11-30T15:32:51.289628",
+  "summary": {
+    "total": 3,
+    "successful": 3,
+    "failed": 0
+  },
+  "description": "Category 1 (appointment within 30 calendar days): Trigger when Does the patient have an acute or delayed Achilles tendon rupture that requires urgent assessment...",
+  "record_id": "692c5c41a0e641f56952aeb9",
+  "pathway_id": "6927660faf4009404b48eea3",
+  "node_unique_id": "62dae2d5-6a30-4e5f-87fa-f5cf33e1322e",
+  "pathway_version_id": null
+}
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `results` | array | Array of pathway evaluation results |
+| `results[].result` | boolean | Whether the condition was met (`true` or `false`) |
+| `results[].reason` | string | Detailed clinical explanation in markdown format |
+| `results[].comparison_type` | string | Type of comparison performed (e.g., `equal`) |
+| `results[].value_a` | string | The clinical question being evaluated |
+| `results[].value_b` | string | The expected value to compare against |
+| `results[].citation` | string | Relevant text extracted from the referral |
+| `results[].grounding` | array | Location of cited text in the referral (page, bounding box, polygon) |
+| `results[].confidence` | number | Confidence score (0-100) for the evaluation |
+| `results[].model_results` | array | Individual results from each AI model |
+| `results[].model_results[].model_name` | string | Name of the AI model (e.g., `Ara-Clinical-4`, `Ara-Clinical-5`) |
+| `results[].model_results[].result` | boolean | Model's individual result |
+| `results[].model_results[].reason` | string | Model's clinical reasoning |
+| `results[].operator` | string | Logical operator for combining conditions (`OR`, `AND`) |
+| `results[].condition` | string | Condition type (e.g., `isEqualTo`) |
+| `results[].ruleIndex` | number | Index of the rule being evaluated |
+| `job_id` | string | Unique identifier for this evaluation job |
+| `processed_at` | string | ISO timestamp of when processing completed |
+| `summary` | object | Summary statistics for the batch |
+| `summary.total` | number | Total number of evaluations |
+| `summary.successful` | number | Number of successful evaluations |
+| `summary.failed` | number | Number of failed evaluations |
+| `description` | string | Human-readable description of the pathway rule |
+| `record_id` | string | Record ID from the referral upload |
+| `pathway_id` | string | ID of the clinical pathway being evaluated |
+| `node_unique_id` | string | Unique ID of the pathway node |
+| `pathway_version_id` | string/null | Version ID of the pathway (if applicable) |
+
+### Understanding RAG Outputs
+
+<AccordionGroup>
+  <Accordion icon="brain" title="Multi-Model Consensus">
+    Alto Health uses multiple AI models (Ara-Clinical-4, Ara-Clinical-5, Ara-Clinical-5.1) to evaluate each pathway condition. This ensemble approach ensures:
+    - **Higher accuracy** - Multiple models must agree on the result
+    - **Reduced bias** - Different model architectures catch different edge cases
+    - **Explainability** - Compare reasoning across models to understand the decision
+
+    The final `result` represents the consensus across all models.
+  </Accordion>
+
+  <Accordion icon="quote-left" title="Citations and Grounding">
+    Every RAG response includes:
+    - **Citation**: The exact text from the referral that supports the conclusion
+    - **Grounding**: Precise coordinates showing where the citation appears in the referral
+    - **Page numbers**: For easy manual verification
+
+    This grounding ensures all AI-generated reasoning is traceable to specific referral content, enabling audit trails and human verification.
+  </Accordion>
+
+  <Accordion icon="graduation-cap" title="Clinical Reasoning">
+    The `reason` field contains detailed clinical explanations in markdown format, including:
+    - Evidence from the referral supporting the conclusion
+    - Clinical context and interpretation
+    - Explicit statement of what was NOT found (for negative results)
+    - Clinical conclusion with reasoning
+
+    This transparency enables clinicians to understand and validate the AI's decision-making process.
+  </Accordion>
+
+  <Accordion icon="gauge-high" title="Confidence Scoring">
+    Confidence scores of 100 indicate:
+    - High certainty in the evaluation
+    - Strong consensus across all AI models
+    - Clear evidence (or clear absence) in the referral
+
+    Lower confidence scores trigger automatic review workflows in your Alto Health configuration.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+**Pathway Evaluation:** This example shows how Alto Health uses RAG to evaluate whether a patient meets specific clinical pathway criteria. The AI retrieves relevant referral sections, applies clinical reasoning, and provides explainable decisions with citations.
+</Note>
+
+<Tip>
+**Use the grounding coordinates** to highlight relevant referral sections in your UI, showing clinicians exactly where the AI found (or didn't find) the evidence for its decision.
+</Tip>
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Clinical Question Answering" icon="circle-question">
+    Ask natural language questions about patient records and get accurate answers extracted from referral referrals.
+  </Card>
+
+  <Card title="Automated Summarization" icon="file-lines">
+    Generate concise clinical summaries from lengthy referral referrals, highlighting key information for triage.
+  </Card>
+
+  <Card title="Pathway Matching" icon="route">
+    Automatically match patients to appropriate clinical pathways by reasoning over referral content and clinical guidelines.
+  </Card>
+
+  <Card title="Decision Support" icon="lightbulb">
+    Provide clinicians with context-aware recommendations based on referral content and historical case data.
+  </Card>
+</CardGroup>

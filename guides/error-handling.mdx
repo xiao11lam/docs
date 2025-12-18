@@ -1,0 +1,98 @@
+---
+title: "Error Handling"
+description: "Handle errors gracefully and troubleshoot common issues"
+---
+
+## Overview
+
+Effective error handling ensures your integration with Alto Health is reliable and provides clear feedback when issues occur. This guide covers common errors, their causes, and how to resolve them.
+
+## HTTP Status Codes
+
+Alto Health uses standard HTTP status codes to indicate the success or failure of API requests:
+
+<AccordionGroup>
+  <Accordion icon="circle-check" title="200 OK">
+    Request succeeded. The response body contains the requested data.
+
+    **When you'll see this:** Successful document uploads, extraction requests, and job status checks.
+  </Accordion>
+
+  <Accordion icon="circle-xmark" title="400 Bad Request">
+    The request was malformed or missing required parameters.
+
+    **Common causes:**
+    - Missing required fields
+    - Invalid data format
+    - Invalid entity type
+    - Malformed JSON
+
+    **How to fix:** Validate your request payload against the API documentation.
+  </Accordion>
+
+  <Accordion icon="lock" title="401 Unauthorized">
+    Authentication failed or API key is invalid.
+
+    **Common causes:**
+    - Missing API key header
+    - Invalid API key
+    - Expired API key
+
+    **How to fix:** Verify your API keys and ensure they're included in request headers.
+  </Accordion>
+
+  <Accordion icon="ban" title="403 Forbidden">
+    The request is valid but you don't have permission to perform this action.
+
+    **Common causes:**
+    - API key has been revoked
+    - Attempting to access another organization's resources
+    - Insufficient permissions
+
+    **How to fix:** Contact Alto Health support to verify your account status.
+  </Accordion>
+
+  <Accordion icon="magnifying-glass" title="404 Not Found">
+    The requested resource doesn't exist.
+
+    **Common causes:**
+    - Invalid job ID
+    - Record has been deleted
+    - Incorrect API endpoint URL
+
+    **How to fix:** Verify the resource ID and endpoint URL.
+  </Accordion>
+
+  <Accordion icon="triangle-exclamation" title="429 Too Many Requests">
+    You've exceeded the rate limit.
+
+    **Rate limits:**
+    - Document Upload: 100 requests/minute
+    - Entity Extraction: 50 requests/minute
+    - Job Status: 300 requests/minute
+
+    **How to fix:** Implement exponential backoff and respect the `retry_after` header.
+  </Accordion>
+
+  <Accordion icon="server" title="500 Internal Server Error">
+    An unexpected error occurred on the server.
+
+    **Common causes:**
+    - Temporary server issue
+    - Service degradation
+    - Bug in API
+
+    **How to fix:** Retry the request with exponential backoff. If it persists, contact support.
+  </Accordion>
+
+  <Accordion icon="clock" title="503 Service Unavailable">
+    The service is temporarily unavailable.
+
+    **Common causes:**
+    - Scheduled maintenance
+    - System overload
+    - Deployment in progress
+
+    **How to fix:** Wait and retry with exponential backoff.
+  </Accordion>
+</AccordionGroup>

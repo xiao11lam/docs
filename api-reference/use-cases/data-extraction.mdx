@@ -1,0 +1,133 @@
+---
+title: 'Data Extraction'
+description: 'Extract structured data from unstructured medical documents'
+---
+
+## Overview
+
+Alto Health's data extraction automatically converts unstructured medical referrals into structured, actionable data. Our AI Assistant processes documents in any format and extracts clinical entities with high accuracy.
+
+## Example Response
+
+When extraction completes, Alto Health sends a webhook notification with the extracted data. Here's an example of the webhook payload:
+
+```json
+{
+  "event": "task.completed",
+  "data": {
+    "job_id": "62f42de2-2490-4b91-bc61-5dd1cffd6af7",
+    "status": "completed",
+    "record_id": "692c5c41a0e641f56952aeb9",
+    "entities": {
+      "entities": [
+        {
+          "entityName": "patientName",
+          "entityValue": "Rosa Brown",
+          "boundingBox": {
+            "left": 0.1166,
+            "top": 0.3684,
+            "width": 0.4419,
+            "height": 0.0171,
+            "page": 1,
+            "original_page": 1
+          },
+          "confidence": "0.987"
+        },
+        {
+          "entityName": "patientGender",
+          "entityValue": "female",
+          "boundingBox": {
+            "left": 0.1168,
+            "top": 0.4745,
+            "width": 0.7099,
+            "height": 0.0177,
+            "page": 1,
+            "original_page": 1
+          },
+          "confidence": "0.870"
+        },
+        {
+          "entityName": "referrer",
+          "entityValue": "",
+          "boundingBox": {},
+          "confidence": "1.000"
+        }
+      ]
+    },
+    "error": null,
+    "extracted_metadata": null,
+    "chunks": [
+      {
+        "text": "Dear Dr. Montgomery",
+        "grounding": [
+          {
+            "page": 1,
+            "boundingBox": {
+              "left": 0.119755,
+              "top": 0.315407,
+              "width": 0.178067,
+              "height": 0.016624
+            },
+            "polygon": [
+              {"x": 71.482, "y": 265.572},
+              {"x": 177.502, "y": 266.443},
+              {"x": 177.394, "y": 279.569},
+              {"x": 71.374, "y": 278.698}
+            ]
+          }
+        ],
+        "chunk_type": "text",
+        "chunk_id": "block_OpAaG8eWJW-97LHR9fPon",
+        "rotation_angle": 0.0
+      },
+      {
+        "text": "Re: Referral for Rosa Brown [Date of Birth: 30/01/1952]",
+        "grounding": [
+          {
+            "page": 1,
+            "boundingBox": {
+              "left": 0.119778,
+              "top": 0.346499,
+              "width": 0.453744,
+              "height": 0.016137
+            }
+          }
+        ],
+        "chunk_type": "text",
+        "chunk_id": "block_umlvx3IvACuYOIKznNms9",
+        "rotation_angle": 0.0
+      }
+    ],
+    "extracted_markdown": "Dear Dr. Montgomery\n\nRe: Referral for Rosa Brown [Date of Birth: 30/01/1952]\n\nI am referring Rosa to your clinic for further evaluation and management.\n\n### 1. Introduction\n\nRosa is a 72 years old female who lives alone and is ECOG 2, and presented in my clinic with redness and swelling in right breast for 4 months\n\n### 2. Clinical Details\n\nRosa presented with redness and swelling in right breast since 4 months..."
+  }
+}
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event` | string | Event type - `task.completed` when extraction finishes |
+| `data.job_id` | string | Unique identifier for the extraction job |
+| `data.status` | string | Job status - `completed`, `processing`, or `failed` |
+| `data.record_id` | string | Record ID from the document upload |
+| `data.entities` | object | Extracted clinical entities |
+| `data.entities.entities` | array | Array of extracted entity objects |
+| `data.entities.entities[].entityName` | string | Name of the extracted entity (e.g., `patientName`, `patientGender`) |
+| `data.entities.entities[].entityValue` | string | Extracted value for the entity |
+| `data.entities.entities[].boundingBox` | object | Location of the entity in the document (coordinates) |
+| `data.entities.entities[].confidence` | string | Confidence score (0-1) - higher is more confident |
+| `data.chunks` | array | Document chunks with text and location information |
+| `data.chunks[].text` | string | Extracted text from the chunk |
+| `data.chunks[].grounding` | array | Location information (page, bounding box, polygon) |
+| `data.chunks[].chunk_type` | string | Type of chunk - `text`, `section_heading`, etc. |
+| `data.extracted_markdown` | string | Full document content in markdown format |
+| `data.error` | string/null | Error message if extraction failed, otherwise null |
+
+<Note>
+**Confidence Scores:** Values closer to 1.0 indicate higher confidence. A score of 1.000 for an empty value typically means Alto Health is confident the entity is not present in the document.
+</Note>
+
+<Tip>
+**Bounding Boxes:** Each extracted entity includes coordinates showing where it was found in the document. Use these for visual verification or highlighting in your UI.
+</Tip>

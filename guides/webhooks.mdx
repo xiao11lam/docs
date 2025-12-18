@@ -1,0 +1,45 @@
+---
+title: "Webhooks"
+description: "Get real-time notifications when your document processing completes"
+---
+
+## Overview
+
+Webhooks allow you to receive automatic notifications when Alto Health completes processing your documents. Instead of repeatedly checking job status, Alto Health will send the results directly to your server when processing is complete.
+
+## Why Use Webhooks?
+
+<CardGroup cols={2}>
+  <Card title="Real-time Updates" icon="bolt">
+    Receive instant notifications when processing completes
+  </Card>
+  <Card title="Efficient Processing" icon="gauge-high">
+    No need to poll job status endpoints repeatedly
+  </Card>
+  <Card title="Reliable Delivery" icon="shield-check">
+    Get notified of both successful and failed processing attempts
+  </Card>
+  <Card title="Track Your Jobs" icon="tag">
+    Use metadata to correlate results with your original requests
+  </Card>
+</CardGroup>
+
+## How Webhooks Work
+
+<Steps>
+  <Step title="Make a Request">
+    Include a `webhook_url` parameter when requesting entity extraction or batch comparison.
+  </Step>
+
+  <Step title="Automation Begins">
+    Alto Health queues your automation for processing asynchronously.
+  </Step>
+
+  <Step title="Automation Completes">
+    When automation finishes (successfully or with errors), Alto Health sends a POST request to your webhook URL.
+  </Step>
+
+  <Step title="Handle the Response">
+    Your server receives the results and processes them accordingly.
+  </Step>
+</Steps>

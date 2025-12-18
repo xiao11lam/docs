@@ -1,16 +1,13 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
+    "title": "Alto HealthAPI",
+    "description": "API for managing healthcare records and document uploads",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://app.arahealth.io"
     }
   ],
   "security": [
@@ -19,36 +16,54 @@
     }
   ],
   "paths": {
-    "/plants": {
+    "/api/v1/pub/health": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "summary": "Health Check",
+        "description": "Check the API health status",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "get": {
+        "summary": "Get Job Status",
+        "description": "Retrieve the status of an extraction job by job ID",
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
+            "name": "job_id",
+            "in": "path",
+            "description": "Job identifier",
+            "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "example": "your_job_id"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Job status retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "$ref": "#/components/schemas/JobStatusResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Unexpected error",
+          "404": {
+            "description": "Job not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -56,35 +71,9 @@
                 }
               }
             }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
           },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,28 +85,66 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/v1/extract": {
+      "post": {
+        "summary": "Extract",
+        "description": "Extract structured data from medical documents using entity recognition",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
+            "name": "assistant-api-key",
+            "in": "header",
+            "description": "Assistant API key for authentication",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "example": "your_assistant_api_key"
             }
           }
         ],
+        "requestBody": {
+          "description": "Document extraction request with file path and entity instructions",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Extraction task started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractResponse"
+                }
+              }
+            }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Bad request - invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -128,25 +155,126 @@
           }
         }
       }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
+    },
+    "/api/v1/pub/records/document-upload": {
       "post": {
-        "description": "Information about a new plant added to the store",
+        "summary": "Upload Document",
+        "description": "Upload a medical referral document for processing",
         "requestBody": {
-          "description": "Plant added to the store",
+          "description": "Multipart form data containing document and metadata",
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Document uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid API key or org_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadAuthError"
+                },
+                "example": {
+                  "message": "Invalid API key",
+                  "detail": "connection(localhost:27017[-3]) incomplete read of message header: read tcp [::1]:55900->[::1]:27017: use of closed network connection",
+                  "status_code": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pub/records/automation": {
+      "post": {
+        "summary": "Run Automation Manually",
+        "description": "Execute automated or semi-automated clinical pathway for a patient record",
+        "requestBody": {
+          "description": "Automation execution request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Automation triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input or missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationError"
+                }
+              }
+            }
           }
         }
       }
@@ -154,55 +282,298 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "DocumentUploadRequest": {
         "type": "object",
+        "required": [
+          "referral"
+        ],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "referral": {
+            "type": "string",
+            "format": "binary",
+            "description": "The referral document file (PDF, image, etc.)"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "referralSource": {
+            "type": "string",
+            "description": "Optional source of the referral",
+            "example": ""
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+      "DocumentUploadResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of uploaded document records",
+            "items": {
+              "$ref": "#/components/schemas/UploadedDocument"
             }
+          },
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message",
+            "example": "success"
           }
-        ]
+        }
+      },
+      "UploadedDocument": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Filename of the uploaded document",
+            "example": "SyntheticReferral-Breast-T1-01-10-04-2025-NA-009.pdf"
+          },
+          "status": {
+            "type": "string",
+            "description": "Processing status of the document",
+            "enum": [
+              "incomplete",
+              "processing",
+              "completed",
+              "failed"
+            ],
+            "example": "complete"
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Unique identifier for the uploaded record",
+            "example": "example_record_id_123"
+          }
+        }
+      },
+      "ExtractRequest": {
+        "type": "object",
+        "required": [
+          "filePath",
+          "instruction",
+          "orgId",
+          "teamId",
+          "recordId"
+        ],
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "URL or path to the document file to Extract from",
+            "example": "https://s3.example.com/documents/example-document.pdf"
+          },
+          "instruction": {
+            "type": "array",
+            "description": "Array of entity extraction instructions",
+            "items": {
+              "$ref": "#/components/schemas/EntityInstruction"
+            }
+          },
+          "orgId": {
+            "type": "string",
+            "description": "Organization identifier",
+            "example": "your_org_id"
+          },
+          "teamId": {
+            "type": "string",
+            "description": "Team identifier",
+            "example": "your_team_id"
+          },
+          "recordId": {
+            "type": "string",
+            "description": "Record identifier",
+            "example": "your_record_id"
+          }
+        }
+      },
+      "EntityInstruction": {
+        "type": "object",
+        "required": [
+          "entityName",
+          "entityType",
+          "entityQuestion",
+          "entityDescription"
+        ],
+        "properties": {
+          "entityName": {
+            "type": "string",
+            "description": "Name of the entity to extract",
+            "example": "patientName"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of entity",
+            "enum": ["text", "list", "email", "date", "number"],
+            "example": "text"
+          },
+          "entityQuestion": {
+            "type": "string",
+            "description": "Question to guide the extraction",
+            "example": "What's the Patient name?"
+          },
+          "entityDescription": {
+            "type": "string",
+            "description": "Description of the entity",
+            "example": "The patient's full name as written in the referral."
+          }
+        }
+      },
+      "ExtractResponse": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Unique identifier for the extraction task",
+            "example": "example_job_id_456"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the extraction task",
+            "enum": ["pending", "processing", "completed", "failed"],
+            "example": "pending"
+          },
+          "message": {
+            "type": "string",
+            "description": "Descriptive message about the task",
+            "example": "Entity recognition task started for record ID: your_record_id"
+          }
+        }
+      },
+      "JobStatusResponse": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier",
+            "example": "example_job_id_456"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the job",
+            "enum": ["pending", "processing", "completed", "failed"],
+            "example": "pending"
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message",
+            "example": "Task is still processing"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Health status message",
+            "example": "healthy"
+          }
+        }
       },
       "Error": {
+        "type": "object",
         "required": [
           "error",
           "message"
         ],
-        "type": "object",
         "properties": {
           "error": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "description": "Error code or type"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        }
+      },
+      "AutomationRequest": {
+        "type": "object",
+        "required": [
+          "recordId",
+          "pathwayType"
+        ],
+        "properties": {
+          "recordId": {
+            "type": "string",
+            "description": "Unique identifier for the patient record",
+            "example": "6924b6882ccfec0e13b8e4b9"
+          },
+          "pathwayType": {
+            "type": "string",
+            "description": "Type of pathway execution",
+            "enum": ["auto", "semiAutomatic"],
+            "example": "semiAutomatic"
+          },
+          "pathwayName": {
+            "type": "string",
+            "description": "Name of the pathway to execute (required for semiAutomatic type)",
+            "example": "Achilles tendon pathology and rupture"
+          }
+        }
+      },
+      "AutomationResponse": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "High-level status message",
+            "example": "success"
+          },
+          "sub_message": {
+            "type": "string",
+            "description": "Additional status details",
+            "example": "success"
+          }
+        }
+      },
+      "AutomationError": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 400
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid request"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed error information",
+            "example": "recordId is required"
+          }
+        }
+      },
+      "DocumentUploadAuthError": {
+        "type": "object",
+        "required": [
+          "message",
+          "status_code"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "Invalid API key"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed error information",
+            "example": "connection(localhost:27017[-3]) incomplete read of message header: read tcp [::1]:55900->[::1]:27017: use of closed network connection"
+          },
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 401
           }
         }
       }
@@ -210,7 +581,9 @@
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "Bearer token authentication using your Alto Health API key"
       }
     }
   }

@@ -1,0 +1,140 @@
+---
+title: "Supported File Formats"
+description: "File types supported by Alto Health's referral processing platform"
+---
+
+## Overview
+
+Alto Health accepts referrals and medical documents in multiple formats. Our AI platform processes unstructured documents from any source channel—email, fax, scanned documents, or direct upload.
+
+## Supported Formats
+
+### Image Formats
+
+- **PNG** - Portable Network Graphics
+- **JPEG/JPG** - Joint Photographic Experts Group
+
+### PDF Documents
+
+- **PDF** - Portable Document Format (including scanned PDFs)
+
+### Spreadsheets
+
+- **CSV** - Comma-Separated Values
+
+### Text Documents
+
+- **DOCX** - Microsoft Word (Office Open XML)
+- **DOC** - Microsoft Word (Legacy Format)
+- **TXT** - Plain Text Files
+
+## Document Requirements
+
+<AccordionGroup>
+  <Accordion icon="file-image" title="Image Files">
+    - Maximum file size: 25MB per document
+    - Minimum resolution: 300 DPI recommended for OCR accuracy
+    - Supported: Scanned documents, photos of referral letters
+  </Accordion>
+
+  <Accordion icon="file-pdf" title="PDF Documents">
+    - Maximum file size: 25MB per document
+    - Supports both native PDF and scanned PDF documents
+    - Multi-page PDFs fully supported
+  </Accordion>
+
+  <Accordion icon="table" title="Spreadsheet Files">
+    - Maximum file size: 10MB per file
+    - CSV files with structured referral data
+  </Accordion>
+
+  <Accordion icon="file-lines" title="Text Documents">
+    - Maximum file size: 10MB per file
+    - Supports Microsoft Word documents (.docx, .doc)
+    - Plain text files (.txt) with UTF-8 encoding
+  </Accordion>
+</AccordionGroup>
+
+## Upload Methods
+
+Alto Health supports multiple ingestion channels:
+
+<CardGroup cols={2}>
+  <Card title="API Upload" icon="code">
+    Upload documents programmatically via our REST API using the **POST /api/v1/pub/records/document-upload** endpoint.
+  </Card>
+
+  <Card title="Email Integration" icon="envelope">
+    Forward referrals directly to your clinic's dedicated Alto Health email address for automatic processing.
+  </Card>
+
+  <Card title="Drag & Drop" icon="upload">
+    Upload documents manually through the Alto Health web interface with drag-and-drop support.
+  </Card>
+
+  <Card title="Fax Integration" icon="fax">
+    Receive faxed referrals automatically through integrated fax-to-digital conversion.
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<Steps>
+  <Step title="Use High-Quality Scans">
+    For scanned documents, use 300 DPI or higher to ensure optimal OCR accuracy and data extraction.
+  </Step>
+
+  <Step title="Ensure Legibility">
+    Verify that handwritten notes, stamps, and signatures are clearly visible before uploading.
+  </Step>
+
+  <Step title="Include All Pages">
+    Upload complete referral documents with all pages, including attachments and supporting clinical information.
+  </Step>
+
+  <Step title="Use Native Formats When Possible">
+    Native PDF or DOCX files provide better extraction accuracy than scanned images.
+  </Step>
+</Steps>
+
+## Need Support for Other Formats?
+
+If your clinic uses document formats not listed here, contact our support team:
+
+<Card
+  title="Request Format Support"
+  icon="headset"
+  href="mailto:xiao@altohealth.io"
+>
+  Email: xiao@altohealth.io
+
+  We evaluate format support requests based on clinical workflow needs and technical feasibility.
+</Card>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Upload Documents"
+    icon="upload"
+    href="/api-reference/endpoint/document-upload"
+  >
+    Learn how to upload referrals via API
+  </Card>
+
+  <Card
+    title="Integration Guide"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get started with your first integration
+  </Card>
+
+  <Card
+    title="Error Handling"
+    icon="triangle-exclamation"
+    href="/guides/error-handling"
+  >
+    Handle upload errors and validation issues
+  </Card>
+</CardGroup>

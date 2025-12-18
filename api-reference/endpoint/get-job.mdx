@@ -1,0 +1,114 @@
+---
+title: 'Get Job Status'
+description: 'Retrieve the status of an extraction job'
+openapi: 'GET /v1/jobs/{job_id}'
+---
+
+## Overview
+
+Check the status of an extraction job using the job ID returned from the Extract endpoint. Use this to monitor the progress of your document extraction tasks.
+
+## Endpoint
+
+```
+GET https://app.arahealth.io/v1/jobs/{job_id}
+```
+
+**Base URL:** `https://app.arahealth.io`
+**Path:** `/v1/jobs/{job_id}`
+**Method:** `GET`
+**Authentication:** None required
+
+## Path Parameters
+
+- `job_id` (required) - The job identifier returned from the Extract endpoint
+
+## Code Examples
+
+<CodeGroup>
+
+```csharp C#
+var client = new HttpClient();
+var request = new HttpRequestMessage(HttpMethod.Get, "https://app.arahealth.io/v1/jobs/your_job_id");
+var response = await client.SendAsync(request);
+response.EnsureSuccessStatusCode();
+Console.WriteLine(await response.Content.ReadAsStringAsync());
+```
+
+```javascript JavaScript
+const jobId = 'your_job_id';
+
+const response = await fetch(`https://app.arahealth.io/v1/jobs/${jobId}`, {
+  method: 'GET'
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+job_id = "your_job_id"
+url = f"https://app.arahealth.io/v1/jobs/{job_id}"
+
+response = requests.get(url)
+print(response.json())
+```
+
+```bash cURL
+curl -X GET https://app.arahealth.io/v1/jobs/your_job_id
+```
+
+</CodeGroup>
+
+## Response
+
+The response returns the current status of the job:
+
+```json
+{
+  "job_id": "example_job_id_456",
+  "status": "pending",
+  "message": "Task is still processing"
+}
+```
+
+### Response Fields
+
+- `job_id` - The job identifier
+- `status` - Current status of the job:
+  - `pending` - Job is queued and waiting to start
+  - `processing` - Job is currently being processed
+  - `completed` - Job has finished successfully
+  - `failed` - Job encountered an error
+- `message` - Descriptive message about the current status
+
+## Usage Flow
+
+1. Upload a document using the [Document Upload endpoint](/api-reference/endpoint/document-upload)
+2. Processing begins automatically, creating a job
+3. Poll this endpoint periodically using the `job_id` to check the job status
+4. When `status` is `completed`, the data extraction and pathway execution are complete
+
+### Example Polling Pattern
+
+```javascript JavaScript
+async function waitForJobCompletion(jobId) {
+  while (true) {
+    const response = await fetch(`https://app.arahealth.io/v1/jobs/${jobId}`);
+    const data = await response.json();
+
+    if (data.status === 'completed') {
+      console.log('Job completed successfully!');
+      return data;
+    } else if (data.status === 'failed') {
+      console.error('Job failed:', data.message);
+      throw new Error(data.message);
+    }
+
+    // Wait 2 seconds before checking again
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+}
+```

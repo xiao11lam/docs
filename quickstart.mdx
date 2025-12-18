@@ -1,80 +1,149 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Quickstart (5 minutes)"
+description: "Process your first medical document in under 5 minutes"
 ---
 
-## Get started in three steps
+## Overview
 
-Get your documentation site running locally and make your first customization.
+This guide walks you through making your first API calls to Alto Health. You'll upload a medical referral document and trigger automated pathway execution to process it.
 
-### Step 1: Set up your local environment
+<Info>
+  **Prerequisites:**
+  - Your Alto Health API credentials (organization ID, platform API key, authentication token)
+  - A sample medical document (PDF or image)
+  - A configured pathway in your Alto Health account
+  - Basic knowledge of REST APIs
+</Info>
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+## Two Ways to Process Documents
 
-### Step 2: Deploy your changes
+Alto Health offers two approaches for processing documents:
 
 <AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+  <Accordion icon="bolt" title="Run Automation Automatically (Recommended - Fastest)">
+    **What it does:** Upload your document and Alto Health automatically processes everything.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    **Steps required:**
+    1. Upload document
+    2. Wait for results (via webhook or polling)
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
+    **Best for:** Production systems where you want the fastest, simplest integration. Just upload and let Alto Health handle the rest.
+  </Accordion>
+
+  <Accordion icon="hand" title="Run Automation Manually">
+    **What it does:** Upload your document, then explicitly trigger automation via API call.
+
+    **Steps required:**
+    1. Upload document
+    2. Call the automation endpoint manually
+    3. Wait for results (via webhook or polling)
+
+    **Best for:** Workflows where you need control over when automation starts, or when you want to perform additional operations between upload and processing.
   </Accordion>
 </AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+This quickstart shows the **Manual** approach to demonstrate all available API endpoints. For the autonomous approach, simply skip Step 2 after uploading your document.
 </Note>
+
+## Complete Workflow
+
+We'll build a simple workflow that:
+1. Uploads a medical referral document
+2. **(Optional - Manual only)** Triggers automated pathway execution
+3. Receives results via webhook or polling
+
+### Workflow Overview
+
+```mermaid
+flowchart TD
+    A[Upload Document] -->|Autonomous| B[Run Automation Automatically]
+    A -->|Manual| C[Run Automation Manually]
+    B --> D{Awaiting Results}
+    C --> D
+    D -->|Webhook| E[Receive Webhook Notification]
+    D -->|Polling| F[Poll Status Endpoint]
+    E --> G[Get Results]
+    F --> G
+
+    style A fill:#e1f5ff
+    style B fill:#d4f1d4
+    style C fill:#fff4e1
+    style E fill:#e7f5e7
+    style F fill:#e7f5e7
+    style G fill:#f0e7ff
+```
+
+<Note>
+**Autonomous (Green path):** Fastest approach - upload and Alto Health automatically handles extraction, rules, and actions.
+
+**Manual (Yellow path):** Upload, then explicitly trigger automation for more control.
+
+**Get results via:**
+- **Webhook (Recommended):** Alto Health automatically sends results to your endpoint when processing completes
+- **Polling:** Your service periodically checks the status endpoint until completion
+</Note>
+
+### Step 1: Upload a Document
+
+Upload a medical referral document to Alto Health using the Upload Document endpoint.
+
+<Card
+  title="Upload Document"
+  icon="upload"
+  href="/api-reference/endpoint/document-upload"
+>
+  See complete endpoint documentation with code examples in Python, JavaScript, cURL, and C#
+</Card>
+
+<Tip>
+Save the `record_id` from the response. You'll need it if you're using manual automation (Step 2).
+</Tip>
+
+<Info>
+**Using Autonomous mode?** You're done! Alto Health will automatically process your document. Skip to "What Happens Next?" to learn how to receive your results via webhook or polling.
+</Info>
+
+### Step 2: Run Automation Manually (Optional)
+
+<Warning>
+**Skip this step if using Autonomous mode.** With autonomous automation, processing starts automatically after upload. Only complete this step if you need manual control over when automation starts.
+</Warning>
+
+Trigger the automated pathway to process the document using the record ID from Step 1.
+
+<Card
+  title="Run Automation Manually"
+  icon="play"
+  href="/api-reference/endpoint/run-automation"
+>
+  See complete endpoint documentation with code examples and pathway types
+</Card>
+
+<Note>
+The pathway executes asynchronously. Results will be delivered via:
+- **Webhook** (if configured) - Alto Health POSTs results to your endpoint
+- **Polling** - Query the status endpoint periodically
+
+See the [Webhooks guide](/guides/webhooks) for setting up webhook notifications.
+</Note>
+
+## What Happens Next?
+
+After uploading your document (and optionally triggering automation manually):
+
+1. **Automated Processing** - Alto Health automatically:
+   - Extracts clinical data from the document
+   - Evaluates rules and conditions based on your configured pathways
+   - Executes configured actions (notifications, routing, triage recommendations, etc.)
+   - Updates record status
+
+2. **Receive Results** - Choose your preferred method:
+   - **Webhook (Recommended)**: Configure a webhook URL to receive automatic notifications when processing completes
+   - **Polling**: Query your system to check pathway completion status
+
+<Tip>
+**Fastest workflow:** Use **Autonomous mode** with **Webhooks** for real-time data extraction and triage recommendations. Just upload your document and receive results instantly via webhook - no manual intervention needed!
+
+See the [Webhooks guide](/guides/webhooks) for setup instructions.
+</Tip>

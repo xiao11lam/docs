@@ -1,0 +1,70 @@
+---
+title: 'Health Check'
+description: 'Check the API health status'
+openapi: 'GET /api/v1/pub/health'
+---
+
+## Overview
+
+Check if the API is running and healthy. This endpoint does not require authentication and can be used for monitoring and health checks.
+
+## Endpoint
+
+```
+GET https://app.arahealth.io/api/v1/pub/health
+```
+
+**Base URL:** `https://app.arahealth.io`
+**Path:** `/api/v1/pub/health`
+**Method:** `GET`
+**Authentication:** None required
+
+## Code Examples
+
+<CodeGroup>
+
+```csharp C#
+var client = new HttpClient();
+var request = new HttpRequestMessage(HttpMethod.Get, "https://app.arahealth.io/api/v1/pub/health");
+var response = await client.SendAsync(request);
+response.EnsureSuccessStatusCode();
+Console.WriteLine(await response.Content.ReadAsStringAsync());
+```
+
+```javascript JavaScript
+const response = await fetch('https://app.arahealth.io/api/v1/pub/health', {
+  method: 'GET'
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+url = "https://app.arahealth.io/api/v1/pub/health"
+
+response = requests.get(url)
+print(response.json())
+```
+
+```bash cURL
+curl -X GET https://app.arahealth.io/api/v1/pub/health
+```
+
+</CodeGroup>
+
+## Response
+
+A successful health check returns:
+
+```json
+{
+  "message": "healthy"
+}
+```
+
+### Response Fields
+
+- `message` - Health status message (returns "healthy" when API is operational)
